@@ -1,0 +1,22 @@
+version: '3.8'
+name: pet_mvp
+
+services:
+  db:
+    image: mongo:7
+    container_name: pet_db
+    restart: unless-stopped
+    command: --replSet rs0
+    ports:
+      - '27017:27017'
+      - '28017:28017'
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - pet_net
+
+volumes:
+  mongo_data:
+
+networks:
+  pet_net:

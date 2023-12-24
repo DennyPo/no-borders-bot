@@ -1,0 +1,39 @@
+{
+  "name": "types",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/types/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/apps/types",
+        "main": "apps/types/src/index.ts",
+        "tsConfig": "apps/types/tsconfig.lib.json",
+        "assets": [
+          "apps/types/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ]
+    },
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "mkdir -p ./apps/types/src/protos/generated",
+          "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./apps/types/src/protos/generated ./apps/types/src/protos/*.proto --ts_proto_opt=nestJs=true,outputIndex=true"
+        ],
+        "cwd": "."
+      }
+    }
+  },
+  "tags": []
+}
