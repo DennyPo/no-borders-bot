@@ -35,7 +35,17 @@
         "production": {
           "buildTarget": "bot:build:production"
         }
-      }
+      },
+      "dependsOn": [
+        {
+          "projects": "types",
+          "target": "generate"
+        },
+        {
+          "projects": "types",
+          "target": "build"
+        }
+      ]
     },
     "lint": {
       "executor": "@nx/eslint:lint",

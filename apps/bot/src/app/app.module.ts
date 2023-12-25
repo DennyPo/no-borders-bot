@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ProtobufPackageEnum } from '@types';
 import { join } from 'path';
 import grpcConfig from '../config/grpc.config';
-import { APP_PACKAGE_NAME, APP_SERVICE_NAME } from '../../../backend/src/assets/app';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   controllers: [AppController],
@@ -14,14 +14,13 @@ import { APP_PACKAGE_NAME, APP_SERVICE_NAME } from '../../../backend/src/assets/
   imports: [
     ClientsModule.registerAsync([
       {
-        name: 'BACKEND_SERVICE',
+        name: ProtobufPackageEnum.APP,
         useFactory: (configService: ConfigService) => {
           return {
             transport: Transport.GRPC,
             options: {
-              package: APP_PACKAGE_NAME,
-              protoPath: join(__dirname, 'assets/app.proto'),
-              // url: 'localhost:50051',
+              package: ProtobufPackageEnum.APP,
+              protoPath: join(__dirname, '../types/protos/app.proto'),
             },
           };
         },

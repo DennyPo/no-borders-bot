@@ -6,23 +6,24 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/types",
         "main": "apps/types/src/index.ts",
         "tsConfig": "apps/types/tsconfig.lib.json",
         "assets": [
-          "apps/types/*.md"
+          "apps/types/*.md",
+          {
+            "glob": "*.proto",
+            "input": "apps/types/src/protos/",
+            "output": "./protos/"
+          }
         ]
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
-      "outputs": [
-        "{options.outputFile}"
-      ]
+      "outputs": ["{options.outputFile}"]
     },
     "generate": {
       "executor": "nx:run-commands",
@@ -31,7 +32,8 @@
           "mkdir -p ./apps/types/src/protos/generated",
           "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./apps/types/src/protos/generated ./apps/types/src/protos/*.proto --ts_proto_opt=nestJs=true,outputIndex=true"
         ],
-        "cwd": "."
+        "cwd": ".",
+        "parallel": false
       }
     }
   },
