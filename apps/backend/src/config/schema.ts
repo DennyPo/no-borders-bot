@@ -6,4 +6,5 @@ export const validationSchema = Joi.object({
     .default('development'),
   PORT: Joi.number().required(),
   DATABASE_URL: Joi.string().required(),
+  API_KEY: Joi.string().required(),
 });

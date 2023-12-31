@@ -1,6 +1,6 @@
 import { UseInterceptors } from '@nestjs/common';
 import { Ctx, Start, Update } from 'nestjs-telegraf';
-import { AuthInterceptor } from '../interceptors/auth.interceptor';
+import { AuthInterceptor } from '../interceptors';
 import { ExtendedContext } from '../types';
 
 @Update()
