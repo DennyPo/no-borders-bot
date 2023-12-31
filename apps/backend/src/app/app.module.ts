@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { LoggerModule } from '@logger';
 import { ConfigModule } from '@nestjs/config';
 import generalConfig from '../config/general.config';
 import { validationSchema } from '../config/schema';
@@ -19,6 +20,7 @@ import { AppService } from './app.service';
     PrismaModule,
     UsersModule,
     SessionsModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

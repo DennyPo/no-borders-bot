@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { LoggerModule } from '@logger';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
@@ -11,6 +12,7 @@ import { AppUpdate } from './app.update';
 @Module({
   providers: [AppUpdate],
   imports: [
+    LoggerModule,
     UsersModule,
     SessionsModule,
     ConfigModule.forRoot({

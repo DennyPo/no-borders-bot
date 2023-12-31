@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
+import { Logger } from '@logger';
 import { ConfigService } from '@nestjs/config';
 import { GrpcOptions, Transport } from '@nestjs/microservices';
 import { ProtobufPackageEnum } from '@types';
@@ -8,8 +8,15 @@ import { join } from 'path';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
   const globalPrefix = 'api';
+
+  const logger = app.get(Logger);
+  app.useLogger(logger);
+  app.flushLogs();
+
   app.setGlobalPrefix(globalPrefix);
 
   const configService = app.get(ConfigService);
@@ -28,7 +35,7 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
   await app.listen(port);
-  Logger.log(
+  logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
   );
 }

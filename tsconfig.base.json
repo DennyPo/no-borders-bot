@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@logger": ["apps/logger/src/index.ts"],
       "@types": ["apps/types/src/index.ts"]
     }
   },
