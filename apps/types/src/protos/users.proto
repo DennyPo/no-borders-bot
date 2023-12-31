@@ -1,0 +1,26 @@
+syntax = 'proto3';
+
+package users;
+
+import "google/protobuf/timestamp.proto";
+
+message FindOrCreateUserDto {
+  int32 telegramId = 1;
+  optional string username = 2;
+  string firstName = 3;
+  optional string lastName = 4;
+}
+
+message User {
+  string id = 1;
+  google.protobuf.Timestamp createdAt = 2;
+  google.protobuf.Timestamp updatedAt = 3;
+  int32 telegramId = 4;
+  optional string username = 5;
+  string firstName = 6;
+  optional string lastName = 7;
+}
+
+service UsersService {
+  rpc findOrCreate (FindOrCreateUserDto) returns (User) {}
+}

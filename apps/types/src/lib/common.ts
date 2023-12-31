@@ -1,3 +1,10 @@
 export enum ProtobufPackageEnum {
-  APP = 'app',
+  USERS = 'users',
+  SESSIONS = 'sessions',
+}
+
+export interface BaseEntityInterface {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date | null;
 }

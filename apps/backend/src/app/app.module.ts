@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PrismaModule } from '../prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import generalConfig from '../config/general.config';
 import { validationSchema } from '../config/schema';
+import { PrismaModule } from '../prisma/prisma.module';
+import { SessionsModule } from '../sessions/sessions.module';
+import { UsersModule } from '../users/users.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { validationSchema } from '../config/schema';
       validationSchema,
     }),
     PrismaModule,
+    UsersModule,
+    SessionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

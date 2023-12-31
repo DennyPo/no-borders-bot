@@ -5,7 +5,10 @@ export interface GeneralConfiguration {
   port: number;
 }
 
-export default registerAs<GeneralConfiguration>('general', () => ({
-  env: process.env.NODE_ENV,
-  port: +process.env.PORT,
-}));
+export const generalConfig = registerAs<GeneralConfiguration>(
+  'general',
+  () => ({
+    env: process.env.NODE_ENV,
+    port: +process.env.PORT,
+  })
+);

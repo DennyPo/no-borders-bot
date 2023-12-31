@@ -30,7 +30,7 @@
       "options": {
         "commands": [
           "mkdir -p ./apps/types/src/protos/generated",
-          "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./apps/types/src/protos/generated ./apps/types/src/protos/*.proto --ts_proto_opt=nestJs=true,outputIndex=true"
+          "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./apps/types/src/protos/generated ./apps/types/src/protos/*.proto --ts_proto_opt=nestJs=true,outputIndex=true,useDate=true"
         ],
         "cwd": ".",
         "parallel": false

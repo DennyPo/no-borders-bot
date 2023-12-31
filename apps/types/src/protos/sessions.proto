@@ -1,0 +1,21 @@
+syntax = 'proto3';
+
+package sessions;
+
+import "google/protobuf/timestamp.proto";
+
+message FindOrCreateSessionDto {
+  string userId = 1;
+}
+
+message Session {
+  string id = 1;
+  google.protobuf.Timestamp createdAt = 2;
+  google.protobuf.Timestamp updatedAt = 3;
+  google.protobuf.Timestamp expiresAt = 4;
+  string userId = 5;
+}
+
+service SessionsService {
+  rpc findOrCreate (FindOrCreateSessionDto) returns (Session) {}
+}

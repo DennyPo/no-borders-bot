@@ -5,4 +5,5 @@ export const validationSchema = Joi.object({
     .valid('development', 'production')
     .default('development'),
   PORT: Joi.number().required(),
+  TELEGRAM_TOKEN: Joi.string().required(),
 });

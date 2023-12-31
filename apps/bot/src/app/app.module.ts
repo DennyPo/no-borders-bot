@@ -1,33 +1,31 @@
 import { Module } from '@nestjs/common';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ProtobufPackageEnum } from '@types';
-import { join } from 'path';
-import grpcConfig from '../config/grpc.config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TelegrafModule } from 'nestjs-telegraf';
+import { session } from 'telegraf';
+import { generalConfig, telegramConfig, validationSchema } from '../config';
+import { SessionsModule } from '../sessions/sessions.module';
+import { UsersModule } from '../users/users.module';
+import { AppUpdate } from './app.update';
 
 @Module({
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [AppUpdate],
   imports: [
-    ClientsModule.registerAsync([
-      {
-        name: ProtobufPackageEnum.APP,
-        useFactory: (configService: ConfigService) => {
-          return {
-            transport: Transport.GRPC,
-            options: {
-              package: ProtobufPackageEnum.APP,
-              protoPath: join(__dirname, '../types/protos/app.proto'),
-            },
-          };
-        },
-        imports: [ConfigModule.forFeature(grpcConfig)],
-        inject: [ConfigService],
-      },
-    ]),
+    UsersModule,
+    SessionsModule,
+    ConfigModule.forRoot({
+      cache: true,
+      load: [generalConfig, telegramConfig],
+      validationSchema,
+    }),
+    TelegrafModule.forRootAsync({
+      imports: [ConfigModule.forFeature(telegramConfig)],
+      useFactory: async (configService: ConfigService) => ({
+        token: configService.get<string>('TELEGRAM_TOKEN'),
+        middlewares: [session()],
+      }),
+      inject: [ConfigService],
+    }),
   ],
 })
 export class AppModule {}

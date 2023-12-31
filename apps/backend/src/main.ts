@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { ConfigService } from '@nestjs/config';
-import { Transport } from '@nestjs/microservices';
+import { GrpcOptions, Transport } from '@nestjs/microservices';
 import { ProtobufPackageEnum } from '@types';
 import { join } from 'path';
 import { AppModule } from './app/app.module';
@@ -15,11 +15,14 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<string>('general.port');
 
-  app.connectMicroservice({
+  app.connectMicroservice<GrpcOptions>({
     transport: Transport.GRPC,
     options: {
-      package: ProtobufPackageEnum.APP,
-      protoPath: join(__dirname, '../types/protos/app.proto'),
+      package: [ProtobufPackageEnum.USERS, ProtobufPackageEnum.SESSIONS],
+      protoPath: [
+        join(__dirname, '../types/protos/users.proto'),
+        join(__dirname, '../types/protos/sessions.proto'),
+      ],
     },
   });
 
