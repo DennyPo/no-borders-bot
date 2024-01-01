@@ -16,7 +16,7 @@ import { UsersService } from './users.service';
     ClientsModule.registerAsync([
       {
         name: ProtobufPackageEnum.USERS,
-        useFactory: async (grpcCallInterceptor: GrpcCallInterceptor) => {
+        useFactory: (grpcCallInterceptor: GrpcCallInterceptor) => {
           return {
             transport: Transport.GRPC,
             options: {

@@ -7,4 +7,5 @@ export const validationSchema = Joi.object({
   PORT: Joi.number().required(),
   TELEGRAM_TOKEN: Joi.string().required(),
   BACKEND_API_KEY: Joi.string().required(),
+  OWNER_ID: Joi.number().required(),
 });
