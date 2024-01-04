@@ -1,5 +1,8 @@
 import { UseInterceptors } from '@nestjs/common';
-import { Ctx, Start, Update } from 'nestjs-telegraf';
+import { Action, Ctx, On, Start, Update } from 'nestjs-telegraf';
+import { Markup, Scenes } from 'telegraf';
+import { ATTACHMENTS, BUTTONS, MESSAGES } from '../constants';
+import { ActionTypeEnum, SCENES } from '../constants/actions';
 import { AuthInterceptor, ErrorInterceptor } from '../interceptors';
 import { ExtendedContext } from '../types';
 
@@ -7,11 +10,110 @@ import { ExtendedContext } from '../types';
 @UseInterceptors(AuthInterceptor, ErrorInterceptor)
 export class AppUpdate {
   @Start()
+  @Action(ActionTypeEnum.goMenu)
   async onStart(@Ctx() ctx: ExtendedContext) {
-    console.log('====== ctx ========', ctx.user);
-    console.log('====== session ========', ctx.session);
-    console.log('start messaging');
+    const inlineKeyboard = Markup.inlineKeyboard([
+      [
+        Markup.button.callback(
+          BUTTONS.MAIN_MENU.GO_REPORT_MENU,
+          ActionTypeEnum.goReportMenu
+        ),
+      ],
+      [
+        Markup.button.callback(
+          BUTTONS.MAIN_MENU.HOW_IT_WORKS,
+          ActionTypeEnum.goHowItWorks
+        ),
+      ],
+    ]).reply_markup;
 
-    throw new Error('An error occurred');
+    if (ctx.updateType === 'message') {
+      await ctx.reply(MESSAGES.MAIN_MENU, {
+        parse_mode: 'MarkdownV2',
+        reply_markup: inlineKeyboard,
+      });
+    } else {
+      await ctx.editMessageText(MESSAGES.MAIN_MENU, {
+        parse_mode: 'MarkdownV2',
+        reply_markup: inlineKeyboard,
+      });
+    }
+  }
+
+  @Action(ActionTypeEnum.goHowItWorks)
+  async onHowItWorks(@Ctx() ctx: ExtendedContext) {
+    const inlineKeyboard = Markup.inlineKeyboard([
+      [
+        Markup.button.callback(
+          BUTTONS.MAIN_MENU.GO_INSTRUCTION,
+          ActionTypeEnum.goInstruction
+        ),
+      ],
+      [Markup.button.callback(BUTTONS.GO_BACK, ActionTypeEnum.goMenu)],
+    ]).reply_markup;
+
+    await ctx.editMessageText(MESSAGES.HOW_IT_WORKS, {
+      parse_mode: 'MarkdownV2',
+      reply_markup: inlineKeyboard,
+    });
+  }
+
+  @Action(ActionTypeEnum.goInstruction)
+  async onInstruction(@Ctx() ctx: ExtendedContext) {
+    await ctx.reply(MESSAGES.INSTRUCTION, {
+      parse_mode: 'MarkdownV2',
+    });
+
+    await ctx.replyWithMediaGroup([
+      {
+        type: 'photo',
+        media: ATTACHMENTS.INSTRUCTION.PHOTO_1,
+      },
+      {
+        type: 'photo',
+        media: ATTACHMENTS.INSTRUCTION.PHOTO_2,
+      },
+    ]);
+    await ctx.answerCbQuery();
+  }
+
+  @Action(ActionTypeEnum.goReportMenu)
+  async onReportMenu(@Ctx() ctx: ExtendedContext) {
+    const inlineKeyboard = Markup.inlineKeyboard([
+      [
+        Markup.button.callback(
+          BUTTONS.REPORT_MENU.REPORT_RESTRICTION,
+          ActionTypeEnum.reportRestriction
+        ),
+      ],
+      [
+        Markup.button.callback(
+          BUTTONS.REPORT_MENU.REPORT_CONVENIENCE,
+          ActionTypeEnum.reportConvenience
+        ),
+      ],
+      [Markup.button.callback(BUTTONS.GO_BACK, ActionTypeEnum.goMenu)],
+    ]).reply_markup;
+
+    await ctx.editMessageText(MESSAGES.REPORT_MENU, {
+      parse_mode: 'MarkdownV2',
+      reply_markup: inlineKeyboard,
+    });
+  }
+
+  @Action(ActionTypeEnum.reportRestriction)
+  async onReportRestriction(@Ctx() ctx: Scenes.SceneContext<ExtendedContext>) {
+    await ctx.scene.enter(SCENES.REPORT, {
+      type: ActionTypeEnum.reportRestriction,
+    });
+    await ctx.answerCbQuery();
+  }
+
+  //   test
+
+  @On('message')
+  onMessage(@Ctx() ctx: ExtendedContext) {
+    // @ts-ignore
+    console.log('====== message ========', ctx.message?.location);
   }
 }

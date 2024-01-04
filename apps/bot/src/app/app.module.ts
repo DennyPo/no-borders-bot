@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
 import { generalConfig, telegramConfig, validationSchema } from '../config';
+import { PlacesModule } from '../places/places.module';
 import { SessionsModule } from '../sessions/sessions.module';
 import { UsersModule } from '../users/users.module';
 import { AppUpdate } from './app.update';
@@ -15,6 +16,7 @@ import { AppUpdate } from './app.update';
     LoggerModule,
     UsersModule,
     SessionsModule,
+    PlacesModule,
     ConfigModule.forRoot({
       cache: true,
       load: [generalConfig, telegramConfig],

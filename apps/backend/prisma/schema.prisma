@@ -31,3 +31,10 @@ model Session {
 
   @@map("session")
 }
+
+enum ActionType {
+  goBack
+  goReportMenu
+  reportRestriction
+  reportConvenience
+}

@@ -1,7 +1,7 @@
 import { sessions, users } from '@types';
-import { Context } from 'telegraf';
+import { Scenes } from 'telegraf';
 
-export interface ExtendedContext extends Context {
+export interface ExtendedContext extends Scenes.WizardContext {
   user: users.User;
-  session: sessions.Session;
+  dbSession: sessions.Session;
 }

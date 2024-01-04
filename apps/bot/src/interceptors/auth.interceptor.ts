@@ -38,7 +38,7 @@ export class AuthInterceptor implements NestInterceptor {
       });
 
       requestCtx.user = user;
-      requestCtx.session = session;
+      requestCtx.dbSession = session;
 
       return next.handle();
     } catch (error) {
