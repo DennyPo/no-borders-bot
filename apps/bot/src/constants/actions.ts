@@ -8,6 +8,7 @@ export enum ActionTypeEnum {
   reportConvenience = 'reportConvenience',
   startReportingRestriction = 'startReportingRestriction',
   howToSendLocation = 'howToSendLocation',
+  dontHavePhoto = 'dontHavePhoto',
 }
 
 export const SCENES = {
@@ -17,4 +18,6 @@ export const SCENES = {
 export const STEPS = {
   FIRST: 0,
   SECOND: 1,
+  THIRD: 2,
+  FOURTH: 3,
 } as const;

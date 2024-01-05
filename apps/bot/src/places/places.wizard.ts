@@ -1,11 +1,11 @@
 import { UseInterceptors } from '@nestjs/common';
-import { Action, Ctx, Message, Wizard, WizardStep } from 'nestjs-telegraf';
+import { Action, Ctx, Message, On, Wizard, WizardStep } from 'nestjs-telegraf';
 import { Markup } from 'telegraf';
 import { AppUpdate } from '../app/app.update';
 import { BUTTONS, MESSAGES } from '../constants';
 import { ActionTypeEnum, SCENES, STEPS } from '../constants/actions';
 import { AuthInterceptor, ErrorInterceptor } from '../interceptors';
-import { ExtendedContext } from '../types';
+import { ExtendedContext, TelegramMessage } from '../types';
 
 @Wizard(SCENES.REPORT)
 @UseInterceptors(AuthInterceptor, ErrorInterceptor)
@@ -13,7 +13,7 @@ export class PlacesWizard {
   constructor(private readonly appUpdate: AppUpdate) {}
 
   @WizardStep(STEPS.FIRST)
-  async onStartReportingRestriction(@Ctx() ctx: ExtendedContext) {
+  async onSceneFirst(@Ctx() ctx: ExtendedContext) {
     const inlineKeyboard = Markup.inlineKeyboard([
       [
         Markup.button.callback(
@@ -32,9 +32,9 @@ export class PlacesWizard {
   }
 
   @WizardStep(STEPS.SECOND)
-  async onScene(
+  async onSceneSecond(
     @Ctx() ctx: ExtendedContext,
-    @Message() message: { location: { latitude: number; longitude: number } }
+    @Message() message: TelegramMessage
   ) {
     const inlineKeyboard = Markup.inlineKeyboard([
       [Markup.button.callback(BUTTONS.GO_MENU, ActionTypeEnum.goMenu)],
@@ -47,9 +47,69 @@ export class PlacesWizard {
       });
       return;
     } else {
-      await ctx.reply('Надішліть фото');
+      ctx.scene.state = {
+        ...ctx.wizard.state,
+        location: message.location,
+      };
+
+      await ctx.reply(MESSAGES.SEND_DESCRIPTION, {
+        parse_mode: 'MarkdownV2',
+        reply_markup: inlineKeyboard,
+      });
       ctx.wizard.next();
     }
+  }
+
+  @WizardStep(STEPS.THIRD)
+  async onSceneThird(
+    @Ctx() ctx: ExtendedContext,
+    @Message() message: TelegramMessage
+  ) {
+    const commonButtons = [
+      [Markup.button.callback(BUTTONS.GO_MENU, ActionTypeEnum.goMenu)],
+    ];
+
+    if (!message?.text) {
+      await ctx.reply(MESSAGES.WAITING_FOR_DESCRIPTION, {
+        parse_mode: 'MarkdownV2',
+        reply_markup: Markup.inlineKeyboard(commonButtons).reply_markup,
+      });
+      return;
+    } else {
+      ctx.scene.state = {
+        ...ctx.wizard.state,
+        description: message.text,
+      };
+
+      commonButtons.unshift([
+        Markup.button.callback(
+          BUTTONS.REPORT.DONT_HAVE_PHOTO,
+          ActionTypeEnum.dontHavePhoto
+        ),
+      ]);
+
+      await ctx.reply(MESSAGES.SEND_PHOTO, {
+        parse_mode: 'MarkdownV2',
+        reply_markup: Markup.inlineKeyboard(commonButtons).reply_markup,
+      });
+
+      ctx.wizard.next();
+    }
+  }
+
+  @WizardStep(STEPS.FOURTH)
+  async onSceneFourth(
+    @Ctx() ctx: ExtendedContext,
+    @Message() message: TelegramMessage
+  ) {
+    await ctx.reply(MESSAGES.THANKS_FOR_REPORT, {
+      parse_mode: 'MarkdownV2',
+      reply_markup: Markup.inlineKeyboard([
+        [Markup.button.callback(BUTTONS.GO_MENU, ActionTypeEnum.goMenu)],
+      ]).reply_markup,
+    });
+
+    await ctx.scene.leave();
   }
 
   @Action(ActionTypeEnum.goInstruction)
@@ -61,5 +121,42 @@ export class PlacesWizard {
   async onStart(@Ctx() ctx: ExtendedContext) {
     await ctx.scene.leave();
     return this.appUpdate.onStart(ctx);
+  }
+
+  @Action(ActionTypeEnum.dontHavePhoto)
+  async onDontHavePhoto(@Ctx() ctx: ExtendedContext) {
+    const inlineKeyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(BUTTONS.GO_MENU, ActionTypeEnum.goMenu)],
+    ]).reply_markup;
+
+    await ctx.answerCbQuery();
+    await ctx.reply(MESSAGES.THANKS_FOR_REPORT, {
+      parse_mode: 'MarkdownV2',
+      reply_markup: inlineKeyboard,
+    });
+    await ctx.scene.leave();
+  }
+
+  @On('photo')
+  onPhoto(@Ctx() ctx: ExtendedContext, @Message() message: TelegramMessage) {
+    switch (ctx.wizard.cursor) {
+      case STEPS.FIRST:
+        return this.onSceneFirst(ctx);
+
+      case STEPS.SECOND:
+        return this.onSceneSecond(ctx, message);
+
+      case STEPS.THIRD:
+        return this.onSceneThird(ctx, message);
+
+      case STEPS.FOURTH: {
+        // TODO: known issue: when user send several photo, we should handle it, because media group invokes onPhoto several times
+        // Think about interceptors
+        return this.onSceneFourth(ctx, message);
+      }
+
+      default:
+        return;
+    }
   }
 }

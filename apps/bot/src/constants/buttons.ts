@@ -12,5 +12,7 @@ export const BUTTONS = {
   },
   REPORT: {
     HOW_TO_SEND_LOCATION: '🤔Як це зробити?',
+    DONT_HAVE_PHOTO: '📷Завершити без фото',
+    FINALIZE: 'Завершити',
   },
 } as const;

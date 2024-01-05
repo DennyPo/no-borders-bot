@@ -1,10 +1,10 @@
 import { UseInterceptors } from '@nestjs/common';
-import { Action, Ctx, On, Start, Update } from 'nestjs-telegraf';
-import { Markup, Scenes } from 'telegraf';
+import { Action, Ctx, Message, On, Start, Update } from 'nestjs-telegraf';
+import { Markup } from 'telegraf';
 import { ATTACHMENTS, BUTTONS, MESSAGES } from '../constants';
 import { ActionTypeEnum, SCENES } from '../constants/actions';
 import { AuthInterceptor, ErrorInterceptor } from '../interceptors';
-import { ExtendedContext } from '../types';
+import { ExtendedContext, TelegramMessage } from '../types';
 
 @Update()
 @UseInterceptors(AuthInterceptor, ErrorInterceptor)
@@ -102,9 +102,17 @@ export class AppUpdate {
   }
 
   @Action(ActionTypeEnum.reportRestriction)
-  async onReportRestriction(@Ctx() ctx: Scenes.SceneContext<ExtendedContext>) {
+  async onReportRestriction(@Ctx() ctx: ExtendedContext) {
     await ctx.scene.enter(SCENES.REPORT, {
       type: ActionTypeEnum.reportRestriction,
+    });
+    await ctx.answerCbQuery();
+  }
+
+  @Action(ActionTypeEnum.reportConvenience)
+  async onReportConvenience(@Ctx() ctx: ExtendedContext) {
+    await ctx.scene.enter(SCENES.REPORT, {
+      type: ActionTypeEnum.reportConvenience,
     });
     await ctx.answerCbQuery();
   }
@@ -112,8 +120,9 @@ export class AppUpdate {
   //   test
 
   @On('message')
-  onMessage(@Ctx() ctx: ExtendedContext) {
+  onMessage(@Ctx() ctx: ExtendedContext, @Message() message: TelegramMessage) {
     // @ts-ignore
-    console.log('====== message ========', ctx.message?.location);
+    console.log('====== message ========', message);
+    console.log('====== ctx ========', ctx);
   }
 }
