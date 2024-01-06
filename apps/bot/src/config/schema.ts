@@ -8,4 +8,5 @@ export const validationSchema = Joi.object({
   TELEGRAM_TOKEN: Joi.string().required(),
   BACKEND_API_KEY: Joi.string().required(),
   OWNER_ID: Joi.number().required(),
+  BACKEND_GRPC_URL: Joi.string().required(),
 });

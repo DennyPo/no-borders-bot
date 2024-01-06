@@ -1,17 +1,55 @@
+import { InterceptorOptions } from '@grpc/grpc-js';
+import { InterceptingCallInterface } from '@grpc/grpc-js/build/src/client-interceptors';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ProtobufPackageEnum } from '@types';
+import { join } from 'path';
 import { AppUpdate } from '../app/app.update';
 import { generalConfig } from '../config';
+import { GrpcCallInterceptor } from '../interceptors';
 import { SessionsModule } from '../sessions/sessions.module';
 import { UsersModule } from '../users/users.module';
+import { PlacesService } from './places.service';
 import { PlacesWizard } from './places.wizard';
 
 @Module({
-  providers: [PlacesWizard, AppUpdate],
+  providers: [PlacesWizard, AppUpdate, PlacesService],
   imports: [
     UsersModule,
     SessionsModule,
     ConfigModule.forFeature(generalConfig),
+    ClientsModule.registerAsync([
+      {
+        name: ProtobufPackageEnum.PLACES,
+        useFactory: (
+          configService: ConfigService,
+          grpcCallInterceptor: GrpcCallInterceptor
+        ) => {
+          return {
+            transport: Transport.GRPC,
+            options: {
+              url: configService.get<string>('general.backendGrpcUrl'),
+              package: ProtobufPackageEnum.PLACES,
+              protoPath: join(__dirname, '../types/protos/places.proto'),
+              channelOptions: {
+                interceptors: [
+                  (
+                    options: InterceptorOptions,
+                    nextCall: (
+                      args: InterceptorOptions
+                    ) => InterceptingCallInterface
+                  ) => grpcCallInterceptor.intercept(options, nextCall),
+                ],
+              },
+            },
+          };
+        },
+        imports: [ConfigModule.forFeature(generalConfig)],
+        inject: [ConfigService, GrpcCallInterceptor],
+        extraProviders: [GrpcCallInterceptor],
+      },
+    ]),
   ],
 })
 export class PlacesModule {}

@@ -1,6 +1,7 @@
 export enum ProtobufPackageEnum {
   USERS = 'users',
   SESSIONS = 'sessions',
+  PLACES = 'places',
 }
 
 export interface BaseEntityInterface {

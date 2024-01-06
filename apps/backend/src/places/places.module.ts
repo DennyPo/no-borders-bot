@@ -2,13 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { generalConfig } from '../config';
 import { PrismaService } from '../prisma';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
+import { PlacesController } from './places.controller';
+import { PlacesService } from './places.service';
 
 @Module({
-  providers: [UsersService, PrismaService],
-  exports: [UsersService],
-  controllers: [UsersController],
+  controllers: [PlacesController],
+  providers: [PlacesService, PrismaService],
   imports: [ConfigModule.forFeature(generalConfig)],
 })
-export class UsersModule {}
+export class PlacesModule {}

@@ -1,4 +1,5 @@
 import { UseInterceptors } from '@nestjs/common';
+import { places } from '@types';
 import { Action, Ctx, Message, On, Start, Update } from 'nestjs-telegraf';
 import { Markup } from 'telegraf';
 import { ATTACHMENTS, BUTTONS, MESSAGES } from '../constants';
@@ -104,7 +105,7 @@ export class AppUpdate {
   @Action(ActionTypeEnum.reportRestriction)
   async onReportRestriction(@Ctx() ctx: ExtendedContext) {
     await ctx.scene.enter(SCENES.REPORT, {
-      type: ActionTypeEnum.reportRestriction,
+      type: places.PlaceTypeEnum.restriction,
     });
     await ctx.answerCbQuery();
   }
@@ -112,7 +113,7 @@ export class AppUpdate {
   @Action(ActionTypeEnum.reportConvenience)
   async onReportConvenience(@Ctx() ctx: ExtendedContext) {
     await ctx.scene.enter(SCENES.REPORT, {
-      type: ActionTypeEnum.reportConvenience,
+      type: places.PlaceTypeEnum.convenience,
     });
     await ctx.answerCbQuery();
   }

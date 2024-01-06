@@ -21,14 +21,21 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const port = configService.get<string>('general.port');
+  const grpcUrl = configService.get<string>('general.grpcUrl');
 
   app.connectMicroservice<GrpcOptions>({
     transport: Transport.GRPC,
     options: {
-      package: [ProtobufPackageEnum.USERS, ProtobufPackageEnum.SESSIONS],
+      url: grpcUrl,
+      package: [
+        ProtobufPackageEnum.USERS,
+        ProtobufPackageEnum.SESSIONS,
+        ProtobufPackageEnum.PLACES,
+      ],
       protoPath: [
         join(__dirname, '../types/protos/users.proto'),
         join(__dirname, '../types/protos/sessions.proto'),
+        join(__dirname, '../types/protos/places.proto'),
       ],
     },
   });

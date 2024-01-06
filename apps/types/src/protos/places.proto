@@ -1,0 +1,35 @@
+syntax = 'proto3';
+
+package places;
+
+import "google/protobuf/timestamp.proto";
+
+enum PlaceTypeEnum {
+  restriction = 0;
+  convenience = 1;
+}
+
+message CreatePlaceDto {
+  PlaceTypeEnum type = 1;
+  float latitude = 2;
+  float longitude = 3;
+  string description = 4;
+  string userId = 5;
+  repeated string photos = 6;
+}
+
+message Place {
+  string id = 1;
+  google.protobuf.Timestamp createdAt = 2;
+  google.protobuf.Timestamp updatedAt = 3;
+  PlaceTypeEnum type = 4;
+  float latitude = 5;
+  float longitude = 6;
+  string description = 7;
+  string userId = 8;
+  repeated string photos = 9;
+}
+
+service PlacesService {
+  rpc create (CreatePlaceDto) returns (Place) {}
+}

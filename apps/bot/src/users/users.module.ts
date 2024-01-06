@@ -1,7 +1,7 @@
 import { InterceptorOptions } from '@grpc/grpc-js';
 import { InterceptingCallInterface } from '@grpc/grpc-js/build/src/client-interceptors';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ProtobufPackageEnum } from '@types';
 import { join } from 'path';
@@ -16,10 +16,14 @@ import { UsersService } from './users.service';
     ClientsModule.registerAsync([
       {
         name: ProtobufPackageEnum.USERS,
-        useFactory: (grpcCallInterceptor: GrpcCallInterceptor) => {
+        useFactory: (
+          configService: ConfigService,
+          grpcCallInterceptor: GrpcCallInterceptor
+        ) => {
           return {
             transport: Transport.GRPC,
             options: {
+              url: configService.get<string>('general.backendGrpcUrl'),
               package: ProtobufPackageEnum.USERS,
               protoPath: join(__dirname, '../types/protos/users.proto'),
               channelOptions: {
@@ -36,7 +40,7 @@ import { UsersService } from './users.service';
           };
         },
         imports: [ConfigModule.forFeature(generalConfig)],
-        inject: [GrpcCallInterceptor],
+        inject: [ConfigService, GrpcCallInterceptor],
         extraProviders: [GrpcCallInterceptor],
       },
     ]),
