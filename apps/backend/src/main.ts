@@ -3,9 +3,10 @@ import { NestFactory } from '@nestjs/core';
 import { Logger } from '@logger';
 import { ConfigService } from '@nestjs/config';
 import { GrpcOptions, Transport } from '@nestjs/microservices';
-import { ProtobufPackageEnum } from '@types';
+import { BACKEND_CONSUMER_GROUP_ID, BOT_KAFKA_CLIENT_ID, ProtobufPackageEnum } from '@types';
 import { join } from 'path';
 import { AppModule } from './app/app.module';
+import { KafkaOptions } from '@nestjs/microservices/interfaces/microservice-configuration.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -22,6 +23,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<string>('general.port');
   const grpcUrl = configService.get<string>('general.grpcUrl');
+  const kafkaUrl = configService.get<string>('general.kafkaUrl');
 
   app.connectMicroservice<GrpcOptions>({
     transport: Transport.GRPC,
@@ -37,6 +39,19 @@ async function bootstrap() {
         join(__dirname, '../types/protos/sessions.proto'),
         join(__dirname, '../types/protos/places.proto'),
       ],
+    },
+  });
+
+  app.connectMicroservice<KafkaOptions>({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        // clientId: BOT_KAFKA_CLIENT_ID,
+        brokers: [kafkaUrl],
+      },
+      consumer: {
+        groupId: BACKEND_CONSUMER_GROUP_ID,
+      }
     },
   });
 

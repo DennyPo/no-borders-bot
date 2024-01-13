@@ -3,7 +3,7 @@ import { InterceptingCallInterface } from '@grpc/grpc-js/build/src/client-interc
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ProtobufPackageEnum } from '@types';
+import { BACKEND_CONSUMER_GROUP_ID, BACKEND_KAFKA_TOKEN, BOT_KAFKA_CLIENT_ID, ProtobufPackageEnum } from '@types';
 import { join } from 'path';
 import { AppUpdate } from '../app/app.update';
 import { generalConfig } from '../config';
@@ -48,6 +48,25 @@ import { PlacesWizard } from './places.wizard';
         imports: [ConfigModule.forFeature(generalConfig)],
         inject: [ConfigService, GrpcCallInterceptor],
         extraProviders: [GrpcCallInterceptor],
+      },
+      {
+        name: BACKEND_KAFKA_TOKEN,
+        useFactory: (configService: ConfigService) => {
+          return {
+            transport: Transport.KAFKA,
+            options: {
+              client: {
+                clientId: BOT_KAFKA_CLIENT_ID,
+                brokers: [configService.get<string>('general.kafkaUrl')],
+              },
+              consumer: {
+                groupId: BACKEND_CONSUMER_GROUP_ID,
+              },
+            },
+          };
+        },
+        imports: [ConfigModule.forFeature(generalConfig)],
+        inject: [ConfigService],
       },
     ]),
   ],

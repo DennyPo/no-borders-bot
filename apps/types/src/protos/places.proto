@@ -15,7 +15,6 @@ message CreatePlaceDto {
   float longitude = 3;
   string description = 4;
   string userId = 5;
-  repeated string photos = 6;
 }
 
 message Place {

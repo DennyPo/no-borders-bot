@@ -8,4 +8,5 @@ export const validationSchema = Joi.object({
   DATABASE_URL: Joi.string().required(),
   API_KEY: Joi.string().required(),
   GRPC_URL: Joi.string().required(),
+  KAFKA_URL: Joi.string().required(),
 });

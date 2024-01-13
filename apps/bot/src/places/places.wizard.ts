@@ -125,13 +125,17 @@ export class PlacesWizard {
 
       return;
     } else {
+      const largestPhotoSize = Math.max(...message.photo.map(({ file_size }) => file_size));
+      console.log('====== message ========', message.photo);
+      console.log('====== largestPhotoSize ========', largestPhotoSize);
+
       await this.placesService.create({
         userId: ctx.user.id,
         type: ctx.wizard.state.type,
         latitude: ctx.wizard.state.latitude,
         longitude: ctx.wizard.state.longitude,
         description: ctx.wizard.state.description,
-        photos: message.photo.map((photo) => photo.file_id),
+        photo: message.photo.find(({ file_size }) => file_size === largestPhotoSize).file_id,
       });
 
       await ctx.reply(MESSAGES.THANKS_FOR_REPORT, {
@@ -169,7 +173,6 @@ export class PlacesWizard {
       latitude: ctx.wizard.state.latitude,
       longitude: ctx.wizard.state.longitude,
       description: ctx.wizard.state.description,
-      photos: [],
     });
 
     await ctx.reply(MESSAGES.THANKS_FOR_REPORT, {

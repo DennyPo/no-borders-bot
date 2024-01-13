@@ -4,8 +4,6 @@ export enum ProtobufPackageEnum {
   PLACES = 'places',
 }
 
-export interface BaseEntityInterface {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date | null;
+export const BackendPatternsEnum = {
+  DOWNLOAD_PLACE_PHOTO: 'backend.places.download-photo',
 }

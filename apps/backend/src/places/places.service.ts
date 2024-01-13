@@ -7,7 +7,7 @@ export class PlacesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createPlaceDto: places.CreatePlaceDto) {
-    const { userId, description, latitude, longitude, type, photos } =
+    const { userId, description, latitude, longitude, type } =
       createPlaceDto;
 
     const place = await this.prismaService.place.create({

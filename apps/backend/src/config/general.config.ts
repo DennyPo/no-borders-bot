@@ -6,6 +6,7 @@ export interface GeneralConfiguration {
   port: number;
   apiKey: string;
   grpcUrl: string;
+  kafkaUrl: string;
 }
 
 export const generalConfig = registerAs<GeneralConfiguration>(
@@ -15,5 +16,6 @@ export const generalConfig = registerAs<GeneralConfiguration>(
     port: +process.env.PORT,
     apiKey: process.env.API_KEY,
     grpcUrl: process.env.GRPC_URL,
+    kafkaUrl: process.env.KAFKA_URL,
   })
 );

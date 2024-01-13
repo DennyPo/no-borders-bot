@@ -9,6 +9,7 @@ import { SessionsModule } from '../sessions/sessions.module';
 import { UsersModule } from '../users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PhotosModule } from '../photos/photos.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AppService } from './app.service';
     SessionsModule,
     LoggerModule,
     PlacesModule,
+    PhotosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

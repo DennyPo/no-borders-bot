@@ -7,6 +7,7 @@ export interface GeneralConfiguration {
   backendApiKey: string;
   ownerId: number;
   backendGrpcUrl: string;
+  kafkaUrl: string;
 }
 
 export const generalConfig = registerAs<GeneralConfiguration>(
@@ -17,5 +18,6 @@ export const generalConfig = registerAs<GeneralConfiguration>(
     backendApiKey: process.env.BACKEND_API_KEY,
     ownerId: Number.parseInt(process.env.OWNER_ID),
     backendGrpcUrl: process.env.BACKEND_GRPC_URL,
+    kafkaUrl: process.env.KAFKA_URL,
   })
 );
