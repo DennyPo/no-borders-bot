@@ -15,8 +15,31 @@ services:
     networks:
       - pet_net
 
+  kafka:
+    image: bitnami/kafka:3.6
+    container_name: pet_kafka
+    restart: unless-stopped
+    ports:
+      - '9092:9092'
+      - '9093:9093'
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=CONTROLLER://:9093,PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@pet_kafka:9093
+    volumes:
+      - kafka_data:/bitnami/kafka
+    networks:
+      - pet_net
+
 volumes:
   mongo_data:
+  kafka_data:
 
 networks:
   pet_net:
+    driver: bridge
