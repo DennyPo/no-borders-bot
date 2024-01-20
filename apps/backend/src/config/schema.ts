@@ -9,4 +9,9 @@ export const validationSchema = Joi.object({
   API_KEY: Joi.string().required(),
   GRPC_URL: Joi.string().required(),
   KAFKA_URL: Joi.string().required(),
+  AWS_ACCESS_KEY_ID: Joi.string().required(),
+  AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+  AWS_REGION: Joi.string().required(),
+  S3_BUCKET: Joi.string().required(),
+  TELEGRAM_TOKEN: Joi.string().required(),
 });

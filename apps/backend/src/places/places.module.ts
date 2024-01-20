@@ -9,5 +9,6 @@ import { PlacesService } from './places.service';
   controllers: [PlacesController],
   providers: [PlacesService, PrismaService],
   imports: [ConfigModule.forFeature(generalConfig)],
+  exports: [PlacesService],
 })
 export class PlacesModule {}
