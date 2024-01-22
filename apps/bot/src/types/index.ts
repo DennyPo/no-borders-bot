@@ -11,6 +11,7 @@ export interface ExtendedContext extends Scenes.WizardContext {
   user: users.User;
   dbSession: sessions.Session;
   wizard: ExtendedWizard;
+  mediaGroup?: TelegramMessage[];
 }
 
 export interface TelegramMessage {
@@ -20,4 +21,9 @@ export interface TelegramMessage {
   };
   text?: string;
   photo?: PhotoSize[];
+}
+
+export interface CreatePlaceDto extends places.CreatePlaceDto {
+  photo?: PhotoSize[];
+  mediaGroup?: TelegramMessage[];
 }

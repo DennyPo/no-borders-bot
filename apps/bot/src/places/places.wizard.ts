@@ -1,5 +1,5 @@
 import { UseInterceptors } from '@nestjs/common';
-import { Action, Ctx, Message, On, Wizard, WizardStep } from 'nestjs-telegraf';
+import { Action, Ctx, Message, Wizard, WizardStep } from 'nestjs-telegraf';
 import { Markup } from 'telegraf';
 import { AppUpdate } from '../app/app.update';
 import { BUTTONS, MESSAGES } from '../constants';
@@ -110,7 +110,7 @@ export class PlacesWizard {
       [Markup.button.callback(BUTTONS.GO_MENU, ActionTypeEnum.goMenu)],
     ];
 
-    if (!message?.photo) {
+    if (!message?.photo || ctx.mediaGroup?.some(({ photo }) => !photo)) {
       commonButtons.unshift([
         Markup.button.callback(
           BUTTONS.REPORT.DONT_HAVE_PHOTO,
@@ -125,17 +125,14 @@ export class PlacesWizard {
 
       return;
     } else {
-      const largestPhotoSize = Math.max(...message.photo.map(({ file_size }) => file_size));
-      console.log('====== message ========', message.photo);
-      console.log('====== largestPhotoSize ========', largestPhotoSize);
-
       await this.placesService.create({
         userId: ctx.user.id,
         type: ctx.wizard.state.type,
         latitude: ctx.wizard.state.latitude,
         longitude: ctx.wizard.state.longitude,
         description: ctx.wizard.state.description,
-        photo: message.photo.find(({ file_size }) => file_size === largestPhotoSize).file_id,
+        photo: message.photo,
+        mediaGroup: ctx.mediaGroup,
       });
 
       await ctx.reply(MESSAGES.THANKS_FOR_REPORT, {
@@ -180,28 +177,5 @@ export class PlacesWizard {
       reply_markup: inlineKeyboard,
     });
     await ctx.scene.leave();
-  }
-
-  @On('photo')
-  onPhoto(@Ctx() ctx: ExtendedContext, @Message() message: TelegramMessage) {
-    switch (ctx.wizard.cursor) {
-      case STEPS.FIRST:
-        return this.onSceneFirst(ctx);
-
-      case STEPS.SECOND:
-        return this.onSceneSecond(ctx, message);
-
-      case STEPS.THIRD:
-        return this.onSceneThird(ctx, message);
-
-      case STEPS.FOURTH: {
-        // TODO: known issue: when user send several photo, we should handle it, because media group invokes onPhoto several times
-        // Think about interceptors
-        return this.onSceneFourth(ctx, message);
-      }
-
-      default:
-        return;
-    }
   }
 }

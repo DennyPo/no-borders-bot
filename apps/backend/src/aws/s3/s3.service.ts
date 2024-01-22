@@ -19,7 +19,7 @@ export class S3Service {
   async uploadObjectFromStream(readableStream: stream.Readable) {
     const passThroughStream = new stream.PassThrough();
 
-    const parallelUploads3 = new Upload({
+    const uploadStream = new Upload({
       client: this.s3Client,
       params: {
         Bucket: this.config.bucket,
@@ -33,6 +33,7 @@ export class S3Service {
       leavePartsOnError: false,
     });
     readableStream.pipe(passThroughStream);
-    return parallelUploads3.done();
+
+    return uploadStream.done();
   }
 }

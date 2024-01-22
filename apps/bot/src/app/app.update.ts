@@ -122,8 +122,10 @@ export class AppUpdate {
 
   @On('message')
   onMessage(@Ctx() ctx: ExtendedContext, @Message() message: TelegramMessage) {
+    // TODO: Here we will handle all random messages
     // @ts-ignore
     console.log('====== message ========', message);
-    console.log('====== ctx ========', ctx);
+    // @ts-ignore
+    console.log('====== mediaGroup ========', ctx.mediaGroup);
   }
 }

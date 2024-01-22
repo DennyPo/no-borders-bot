@@ -4,6 +4,7 @@ import { LoggerModule } from '@logger';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
+import mediaGroup from 'telegraf-media-group';
 import { generalConfig, telegramConfig, validationSchema } from '../config';
 import { PlacesModule } from '../places/places.module';
 import { SessionsModule } from '../sessions/sessions.module';
@@ -26,7 +27,7 @@ import { AppUpdate } from './app.update';
       imports: [ConfigModule.forFeature(telegramConfig)],
       useFactory: async (configService: ConfigService) => ({
         token: configService.get<string>('TELEGRAM_TOKEN'),
-        middlewares: [session()],
+        middlewares: [session(), mediaGroup()],
       }),
       inject: [ConfigService],
     }),

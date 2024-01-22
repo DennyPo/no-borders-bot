@@ -2,11 +2,10 @@ import { NestFactory } from '@nestjs/core';
 
 import { Logger } from '@logger';
 import { ConfigService } from '@nestjs/config';
-import { GrpcOptions, Transport } from '@nestjs/microservices';
-import { BACKEND_CONSUMER_GROUP_ID, BOT_KAFKA_CLIENT_ID, ProtobufPackageEnum } from '@types';
+import { GrpcOptions, KafkaOptions, Transport } from '@nestjs/microservices';
+import { BACKEND_CONSUMER_GROUP_ID, ProtobufPackageEnum } from '@types';
 import { join } from 'path';
 import { AppModule } from './app/app.module';
-import { KafkaOptions } from '@nestjs/microservices/interfaces/microservice-configuration.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -46,12 +45,11 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        // clientId: BOT_KAFKA_CLIENT_ID,
         brokers: [kafkaUrl],
       },
       consumer: {
         groupId: BACKEND_CONSUMER_GROUP_ID,
-      }
+      },
     },
   });
 
