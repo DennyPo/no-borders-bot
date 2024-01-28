@@ -58,6 +58,10 @@ export const MESSAGES = {
   THANKS_FOR_REPORT: `*Дякуємо за допомогу\\!* 🙏
 
 Ваше місце додано на мапу\\!`,
+  TRY_EXISTING_COMMAND:
+    'Нажаль я вас не розумію, я всього лише бот\\. Спробуйте вибрати потрібний пункт із *Головного меню* або натисніть *Почати* у випадаючому меню\\.',
+  TRY_EXISTING_COMMAND_STICKER:
+    'CAACAgIAAxkBAAIB1WQMd_2_c5_T9Y94NfjGkTmdzgnpAAIGAQAC9wLIDze9PVBIAAFjki8E',
 } as const;
 
 export const ATTACHMENTS = {

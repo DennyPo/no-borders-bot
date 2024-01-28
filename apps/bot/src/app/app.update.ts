@@ -1,11 +1,11 @@
 import { UseInterceptors } from '@nestjs/common';
 import { places } from '@types';
-import { Action, Ctx, Message, On, Start, Update } from 'nestjs-telegraf';
+import { Action, Ctx, On, Start, Update } from 'nestjs-telegraf';
 import { Markup } from 'telegraf';
 import { ATTACHMENTS, BUTTONS, MESSAGES } from '../constants';
 import { ActionTypeEnum, SCENES } from '../constants/actions';
 import { AuthInterceptor, ErrorInterceptor } from '../interceptors';
-import { ExtendedContext, TelegramMessage } from '../types';
+import { ExtendedContext } from '../types';
 
 @Update()
 @UseInterceptors(AuthInterceptor, ErrorInterceptor)
@@ -118,14 +118,16 @@ export class AppUpdate {
     await ctx.answerCbQuery();
   }
 
-  //   test
-
   @On('message')
-  onMessage(@Ctx() ctx: ExtendedContext, @Message() message: TelegramMessage) {
-    // TODO: Here we will handle all random messages
-    // @ts-ignore
-    console.log('====== message ========', message);
-    // @ts-ignore
-    console.log('====== mediaGroup ========', ctx.mediaGroup);
+  async onMessage(@Ctx() ctx: ExtendedContext) {
+    const inlineKeyboard = Markup.inlineKeyboard([
+      [Markup.button.callback(BUTTONS.GO_MENU, ActionTypeEnum.goMenu)],
+    ]).reply_markup;
+
+    await ctx.reply(MESSAGES.TRY_EXISTING_COMMAND, {
+      parse_mode: 'MarkdownV2',
+      reply_markup: inlineKeyboard,
+    });
+    await ctx.replyWithSticker(MESSAGES.TRY_EXISTING_COMMAND_STICKER);
   }
 }
